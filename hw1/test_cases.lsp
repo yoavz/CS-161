@@ -66,4 +66,12 @@
 (unit-test (BTREE2LIST `((1 (2 3)) ((4 5) (6 7))))  `(1 2 3 4 5 6 7))
 (unit-test (BTREE2LIST `(((1 2) (3 4)) ((5 6) (7 8))))  `(1 2 3 4 5 6 7 8))
 
+; Problems 7 and 8
+(unit-test (BTREE2LIST (LIST2BTREE `(1))) `(1))
+(unit-test (BTREE2LIST (LIST2BTREE `(1 2))) `(1 2))
+(unit-test (BTREE2LIST (LIST2BTREE `(1 2 3))) `(1 2 3))
+(unit-test (BTREE2LIST (LIST2BTREE `(1 2 3 4))) `(1 2 3 4))
+(unit-test (BTREE2LIST (LIST2BTREE `(1 2 3 4 5 6 7))) `(1 2 3 4 5 6 7))
+(unit-test (BTREE2LIST (LIST2BTREE `(1 2 3 4 5 6 7 8 9))) `(1 2 3 4 5 6 7 8 9))
+
 (print "All tests passed!")
