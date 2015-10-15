@@ -11,14 +11,9 @@
 ; Arguments:
 ;   1. Tree - a search tree as specified by the definition above
 (defun DFS (Tree)
-  (cond ((atom Tree)
-         (list Tree))
-        ((<= (length Tree) 1)
-         (dfs (car Tree)))
-        (t 
-          (append (dfs (car Tree))
-                  (dfs (cdr Tree))))))
-
+  (if (atom Tree)
+      (if (null Tree) nil (list Tree))
+      (append (dfs (car Tree)) (dfs (cdr Tree)))))
 
 ; DFS-DEPTH implements a depth first search of the Tree limited to a max depth.
 ; The implementation is very similar to the above DFS function, except that it
@@ -28,16 +23,14 @@
 ;   1. Tree - a search tree
 ;   2. depth - an integer specifying the max depth
 (defun DFS-DEPTH (Tree depth) 
-  (cond ((or (<= depth 0) (atom Tree))
-         (cond ((atom Tree) (list Tree))
-               (t `())))
-        (t
-         (cond ((<= (length Tree) 1) (DFS-DEPTH (car Tree) (- depth 1)))
-               (t 
-                (append (DFS-DEPTH (car Tree) (- depth 1))
-                        (DFS-DEPTH (cdr Tree) depth)))))))
+  (if (or (<= depth 0) (atom Tree))
+      (if (atom Tree) (list Tree) `())
+      (if (<= (length Tree) 1) 
+          (DFS-DEPTH (car Tree) (- depth 1))
+          (append (DFS-DEPTH (car Tree) (- depth 1))
+                  (DFS-DEPTH (cdr Tree) depth)))))
 
-; DFID(-AUX) implements a depth-first iterative-deepening search. This is done
+; DFID(-AUX) implement a depth-first iterative-deepening search. This is done
 ; by calling DFS-DEPTH with the given Tree for a depth of 1 - max-depth and 
 ; appending the results together. DFID returns a top-level nodes visited in the
 ; order of the search.
@@ -45,13 +38,14 @@
 ;   1. Tree - a search tree
 ;   2. max-depth - the maximum depth the dfid search should go to
 (defun DFID-AUX (Tree max-depth counter)
-  (cond ((> counter max-depth) `())
-        (t (append (DFS-DEPTH Tree counter) 
-                   (DFID-AUX Tree max-depth (+ counter 1))))))
+  (if (> counter max-depth) `()
+      (append (DFS-DEPTH Tree counter) 
+              (DFID-AUX Tree max-depth (+ counter 1)))))
 (defun DFID (Tree max-depth) 
   (DFID-AUX Tree max-depth 0))
 
 ; Problem 3
+
 ; These functions implement a depth-first solver for the missionary-cannibal
 ; problem. In this problem, three missionaries and three cannibals are trying to
 ; go from the east side of a river to the west side. They have a single boat
@@ -98,18 +92,17 @@
 ; NOTE that next-state returns a list containing the successor state (which is
 ; itself a list); the return should look something like ((1 1 T)).
 (defun next-state (s m c)
+    ; define the number of missionaries and cannibals on each side
     (let* ((otherM (- (car s) m))  
            (otherC (- (car (cdr s)) c))
            (boatM (- 3 otherM))
            (boatC (- 3 otherC)))
-      (cond ((or (and (> boatC boatM)
-                      (> boatM 0))
-                 (and (> otherC otherM)
-                      (> otherM 0))) NIL)
-            ((or (< otherM 0) 
-                 (< otherC 0) 
-                 (< boatM 0) 
-                 (< boatC 0)) NIL)
+            ; if there are more cannibals than missionaries, return nil 
+      (cond ((or (and (> boatC boatM) (> boatM 0))
+                 (and (> otherC otherM) (> otherM 0))) NIL)
+            ; if there are an invalid number of people on either side, return nil
+            ((or (< otherM 0) (< otherC 0) (< boatM 0) (< boatC 0)) NIL)
+            ; otherwise, return the counts and flip the boat side
             (t (list (list boatM boatC (not (car (last s)))))))))
 
 
@@ -118,20 +111,19 @@
 ; returns a list of states that can be reached by applying legal operators to
 ; the current state.
 (defun succ-fn (s)
-  (append ;(next-state s 0 0)
-          (next-state s 1 0) ; move one missionary
-          (next-state s 2 0)
+  (append (next-state s 1 0) ; move one missionary
+          (next-state s 2 0) ; move two missionaries
           (next-state s 0 1) ; move one cannibal
-          (next-state s 0 2)
-          (next-state s 1 1))) ; move a missionary and cannibal
+          (next-state s 0 2) ; move two cannibals
+          (next-state s 1 1))) ; move one missionary and one cannibal
 
 ; ON-PATH checks whether the current state is on the stack of states visited by
 ; this depth-first search. It takes two arguments: the current state (S) and the
 ; stack of states visited by MC-DFS (STATES). It returns T if S is a member of
 ; STATES and NIL otherwise.
 (defun on-path (s states)
-  (cond ((not states) NIL)
-        (t (or (equal s (car states)) (on-path s (cdr states))))))
+  (if (not states) NIL
+      (or (equal s (car states)) (on-path s (cdr states)))))
 
 ; MULT-DFS is a helper function for MC-DFS. It takes two arguments: the path
 ; from from the initial state to the current state (PATH), and the legal
@@ -162,7 +154,7 @@
   (cond 
     ; if the final state has been reached return
     ((final-state s) (append path (list s)))
-    ; check for loops
+    ; check if the current path is a loop
     ((on-path s path) nil)
     ; otherwise, do a dfs on all possible successor states
     (t (mult-dfs (succ-fn s) (append path (list s))))))

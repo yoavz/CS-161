@@ -3,7 +3,7 @@
      (error (format 'nil "Unit test failed: ~A => ~A" ',expr ,expr))))
  
 ;; Problem 1
-; (unit-test (DFS `()) `())
+(unit-test (DFS `()) `())
 (unit-test (DFS `(A)) `(A))
 (unit-test (DFS `((A))) `(A))
 (unit-test (DFS `((A) B)) `(A B))
@@ -25,6 +25,8 @@
 (unit-test (DFID `((A (B)) C (D)) 1) `(C)) 
 (unit-test (DFID `((A (B)) C (D)) 2) `(C A C D)) 
 (unit-test (DFID `((A (B)) C (D)) 3) `(C A C D A B C D)) 
+(unit-test (DFID `((A (B)) C (D E)) 3) `(C A C D E A B C D E)) 
+(unit-test (DFID `(((A X) (B)) C (D E)) 3) `(C C D E A X B C D E)) 
 
 (unit-test (final-state `(3 3 NIL)) t)
 (unit-test (final-state `(2 3 NIL)) NIL)
