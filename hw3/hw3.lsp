@@ -304,7 +304,9 @@
   (cond ((null s) 0)
         ((null (car s)) (h1 (cdr s)))
         (t (+ (if (isBox (car (car s))) 1 0)
-              (h1 (cons (cdr (car s)) (cdr s)))))))
+              (h1 (cons (cdr (car s)) (cdr s)))))
+  )
+)
 
 ; EXERCISE: Change the name of this function to h<UID> where
 ; <UID> is your actual student ID number. Then, modify this
@@ -314,9 +316,48 @@
 ; Objective: make A* solve problems as fast as possible.
 ; The Lisp 'time' function can be used to measure the
 ; running time of a function call.
-;
-; (defun hUID (s)
-;   )
+
+; TODO: redo
+; h304125151 cost function is the same as h1, but with one addition: it also
+; scans each box that it finds for evidence of it being in a corner. If it
+; finds that a box is in a corner, it immediately returns a very high number
+; ("infinity"), because there is no chance of that board ever being solved.  To
+; know if a cell is at the corner (without iterating through the entire board)
+; an auxiliary function first calculates the width and heigh and passes that
+; through the recursion calls.
+
+(defun wallish (s x y)
+  (cond 
+    ((not (in-bounds s x y)) 1)
+    ((isWall (get-tile s x y)) 1)
+    ((isBox (get-tile s x y)) 1)
+    ((isBoxStar (get-tile s x y)) 1)
+    (t 0)))
+
+(defun box-stuck (s box_x box_y)
+  (let* ((top (wallish s box_x (+ 1 box_y)))
+         (bottom (wallish s box_x (- 1 box_y)))
+         (left (wallish s (- 1 box_x) box_y))
+         (right (wallish s (+ 1 box_x) box_y)))
+    (if (>= (+ top bottom left right) 2) t nil)))
+
+(defun tile-cost (s x y)
+  (let* ((box-stuck-cost 100000000))
+    (if (isBox (get-tile s x y))
+      (if (box-stuck s x y) box-stuck-cost 1)
+    0))
+)
+         
+(defun cost-search (s w h x y)
+  (let* ((cost (tile-cost s x y))
+         (next_x (if (>= x (- w 1)) 0 (+ x 1)))
+         (next_y (if (= next_x 0) (+ y 1) y)))
+    (if (>= next_y h) 0
+        (+ cost (cost-search s w h next_x next_y)))))
+
+(defun h304125151 (s)
+  (cost-search s (length (car s)) (length s) 0 0))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -341,7 +382,8 @@
  |#
 
 ;(80,7)
-(setq p1 '((1 1 1 1 1 1)
+(setq p1 
+      '((1 1 1 1 1 1)
 	   (1 0 3 0 0 1)
 	   (1 0 2 0 0 1)
 	   (1 1 0 1 1 1)
@@ -557,6 +599,15 @@
 	    (1 1 1 1 1 0 1 1 1 0 1 3 1 1 0 0 4 4 1)
 	    (0 0 0 0 1 0 0 0 0 0 1 1 1 1 1 1 1 1 1)
 	    (0 0 0 0 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0)))
+
+; finished game
+(setq p23 '((1 1 1 1 1 1)
+	   (1 0 0 0 0 1)
+	   (1 0 0 0 0 1)
+	   (1 1 0 1 1 1)
+	   (1 0 0 0 0 1)
+	   (1 0 0 3 5 1)
+	   (1 1 1 1 1 1)))
 
 ; finished game
 (setq p23 '((1 1 1 1 1 1)
