@@ -33,8 +33,9 @@
 (unit-test (h1 p17) 5)
 
 ;; h304125151
+(unit-test (box-stuck p1 2 2) nil)
 (unit-test (h304125151 p1) 1)
-; (unit-test (h304125151 p5) 2)
-; (unit-test (h304125151 p17) 5)
+(unit-test (h304125151 p5) 2)
+(unit-test (h304125151 p17) 5)
 
 (print "All tests passed! :)")

@@ -175,6 +175,10 @@
 ; this function as the goal testing function, A* will never
 ; terminate until the whole search space is exhausted.
 ;
+
+; goal-test iterates through the entire board and immediately ; returns null if
+; it finds a box. If it has looked at every tile there are no boxes on the
+; board, this means they are all on stars and a goal state has been reached. 
 (defun goal-test (s)
   (cond ((null s) t)
         ((null (car s)) (goal-test (cdr s)))
@@ -205,22 +209,24 @@
         (t (get-nth (cdr L) (- n 1)))))
 
 ; replace-nth is a utility function that replaces the nth element of list L
-; and returns the new L
+; with element r and returns the new L.
 (defun replace-nth (L n r)
   (cond ((null L) nil)
         ((= n 0) (cons r (cdr L)))
         (t (cons (car L) (replace-nth (cdr L) (- n 1) r)))))
   
-; get-tile returns the tile at the coordinates (x, y)
+; get-tile returns the tile at the coordinates (x, y) on the board s, using
+; the helper functions defined above.
 (defun get-tile (s x y) 
   (get-nth (get-nth s y) x))
 
-; replace-tile replaces the tile at (x, y) with the specified integer r
+; replace-tile replaces the tile at (x, y) with the specified tile value r,
+; on board s.
 (defun replace-tile (s x y r)
   (replace-nth s y (replace-nth (get-nth s y) x r)))
 
 ; Given a board s and set of coordinates (x, y), this function returns nil if the
-; coordinates are not valid given the board and t otherwise
+; coordinates are not valid given the board size, and t otherwise.
 (defun in-bounds (s x y) 
   (let* ((width (length (car s)))
          (height (length s)))
@@ -317,37 +323,42 @@
 ; The Lisp 'time' function can be used to measure the
 ; running time of a function call.
 
-; TODO: redo
-; h304125151 cost function is the same as h1, but with one addition: it also
-; scans each box that it finds for evidence of it being in a corner. If it
-; finds that a box is in a corner, it immediately returns a very high number
-; ("infinity"), because there is no chance of that board ever being solved.  To
-; know if a cell is at the corner (without iterating through the entire board)
-; an auxiliary function first calculates the width and heigh and passes that
-; through the recursion calls.
+; The following function(s) define a custom cost function that is the same as
+; h1 except in one regard: if a box is "stuck" in a corner (wall or bounds-
+; wise), and immediately returns a high cost (1000) in this case. This is
+; because if a box is in a corner, there is no hope of every solving the board
+; from that state, so the cost is effectively infinity.
 
+; wallish returns 1 if the (x, y) coordinate on a board is a wall of not in
+; bounds.  it returns 0 otherwise
 (defun wallish (s x y)
   (cond 
     ((not (in-bounds s x y)) 1)
     ((isWall (get-tile s x y)) 1)
-    ((isBox (get-tile s x y)) 1)
-    ((isBoxStar (get-tile s x y)) 1)
     (t 0)))
 
+; box-stuck returns t if a box at (box_x, box_y) coordinates would be stuck, or
+; if two or more of it's edges at that point are "wallish". Otherwise,
+; box-stuck returns nil.
 (defun box-stuck (s box_x box_y)
-  (let* ((top (wallish s box_x (+ 1 box_y)))
-         (bottom (wallish s box_x (- 1 box_y)))
-         (left (wallish s (- 1 box_x) box_y))
-         (right (wallish s (+ 1 box_x) box_y)))
+  (let* ((top (wallish s box_x (+ box_y 1)))
+         (bottom (wallish s box_x (- box_y 1)))
+         (left (wallish s (- box_x 1) box_y))
+         (right (wallish s (+ box_x 1) box_y)))
     (if (>= (+ top bottom left right) 2) t nil)))
 
+; tile-cost returns the cost of each tile. If a tile is a stuck box, the cost is
+; 1000 (high number mimicking infinity). If the tile is a box that is not stuck, 
+; the cost is 1. Otherwise, the cost is 0.
 (defun tile-cost (s x y)
-  (let* ((box-stuck-cost 100000000))
+  (let* ((box-stuck-cost 1000))
     (if (isBox (get-tile s x y))
       (if (box-stuck s x y) box-stuck-cost 1)
     0))
 )
          
+; cost-search iterates through the entire board of width w and height h,
+; starting at the point (x, y). It returns the sum of all of the tile costs.
 (defun cost-search (s w h x y)
   (let* ((cost (tile-cost s x y))
          (next_x (if (>= x (- w 1)) 0 (+ x 1)))
@@ -355,6 +366,8 @@
     (if (>= next_y h) 0
         (+ cost (cost-search s w h next_x next_y)))))
 
+; The following function is the actual cost function used in a-star search,
+; that simply calls cost-search starting at the point (0, 0).
 (defun h304125151 (s)
   (cost-search s (length (car s)) (length s) 0 0))
 
@@ -612,6 +625,15 @@
 ; finished game
 (setq p23 '((1 1 1 1 1 1)
 	   (1 0 0 0 0 1)
+	   (1 0 0 0 0 1)
+	   (1 1 0 1 1 1)
+	   (1 0 0 0 0 1)
+	   (1 0 0 3 5 1)
+	   (1 1 1 1 1 1)))
+
+; stuck box in corner
+(setq p24 '((1 1 1 1 1 1)
+	   (1 0 0 0 2 1)
 	   (1 0 0 0 0 1)
 	   (1 1 0 1 1 1)
 	   (1 0 0 0 0 1)
