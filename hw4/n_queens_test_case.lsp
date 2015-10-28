@@ -44,12 +44,12 @@
     `((2 4 1 3) (3 1 4 2)))
 
 ; final test cases
-(unit-test (queens 2) nil)
-(unit-test (queens 3) nil)
-(unit-test (length (queens 4)) 2)
-(unit-test (length (queens 5)) 10)
-(unit-test (length (queens 6)) 4)
-(unit-test (length (queens 7)) 40)
-(unit-test (length (queens 8)) 92)
+(unit-test (queens-all 2) nil)
+(unit-test (queens-all 3) nil)
+(unit-test (length (queens-all 4)) 2)
+(unit-test (length (queens-all 5)) 10)
+(unit-test (length (queens-all 6)) 4)
+(unit-test (length (queens-all 7)) 40)
+(unit-test (length (queens-all 8)) 92)
 
 (print "all tests passed :)")

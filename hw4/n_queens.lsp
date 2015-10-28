@@ -1,15 +1,46 @@
-; top-level queens function
-(defun queens (n) (queens-aux n 1 `(())))
+; Yoav Zimmerman (304125151)
+; CS 161, Fall 2015
+
+; QUEENS returns a solution to the N-Queens problem
+; Arguments:
+;   n - the width and height of the solution board
+(defun queens (n) (car (queens-all n)))
+
+; For the following functions, we define a "board" as
+; a list of integers. The index of the integer represents
+; the row position of a queen while it's value represents
+; it's column position. For example, the board (3 1 4 2)
+; indicates a queen at column 3 at the first row, a queen
+; at column 1 at the second row, and so on.
+
+; QUEENS-ALL/AUX return all solutions to the N-Queens problem. They do this by
+; iterating through rows 1-n and calling add-queens on each solution board of
+; the previous rows add-queens call.
+; Arguments:
+;   n - the width and height of the solution board
+(defun queens-all (n) (queens-aux n 1 `(())))
 (defun queens-aux (n curr_row boards)
   (if (> curr_row n) boards
     (queens-aux n (+ 1 curr_row) (add-queens n boards))))
 
+; ADD-QUEENS tries to add a queen to the next row of each solution board in
+; boards, by calling add-queen on it and appending all results. It returns
+; a list of next possible board states from the input list of boards.
+; Arguments: 
+;   n - the width and height of the solution board 
+;   boards - a list of boards
 (defun add-queens (n boards)
   (if (null boards) `()
     (append (add-queen n (car boards)) 
             (add-queens n (cdr boards)))))
 
-; returns a list of possible next positions for the next row
+; ADD-QUEEN(-AUX) tries to add a queen to the next row available in board, and
+; returns a list of next possible board states. It does this by calling
+; place-queen on all possible columns (1-n) for the next row. If no queens are
+; possible to place on the next row, this function returns nil.
+; Arguments: 
+;   n - the width and height of the solution board 
+;   board - the board on which a queen will placed on the next row
 (defun add-queen (n board)
   (add-queen-aux n board 1))
 (defun add-queen-aux (n board col) 
@@ -19,25 +50,37 @@
        (recurse (add-queen-aux n board (+ col 1))))
       (if (null new_board) recurse (cons new_board recurse)))))
 
-; tries to place a queen on (row, column), returns
-; the new board if successful, returns nil otherwise
+; PLACE-QUEEN attempts to place a queen on the next row of the board at the
+; column specified. If the queen can legally be placed there, this function
+; returns the new board. If not, the function returns nil.
+; Arguments: 
+;   n - the width and height of the solution board 
+;   board - the board on which a queen will placed
+;   column - the column the queen should try to be placed on.
 (defun place-queen (n board column)
   (cond ((contains board column) nil)
         ((right-diagonal board column) nil)
         ((left-diagonal n board column) nil)
         (t (append board (list column)))))
 
-; returns nil if the board contains a queen on col,
-; and returns t otherwise
+; CONTAINS returns true if the board contains a queen at the specified column
+; position and nil otherwise
+; Arguments: 
+;   board - the board being checked
+;   col - the column being checked for.
 (defun contains (board col)
   (cond 
     ((null board) nil)
     ((= (car board) col) t)
     (t (contains (cdr board) col))))
 
-; For a given board, returns true if a queen in (row, column) would be in a
-; right-down diagonal of a queen already on the board. The row used is the 
-; next row on the board.
+; RIGHT-DIAGONAL checks if a queen can be placed on the next row at the
+; specified column with respect to the diagonal going down and right. If a
+; queen is hitting an existing queens right diagonal, this function returns
+; true, otherwise it returns nil.
+; Arguments: 
+;   board - the board being checked
+;   col - the column the queen will be placed at, on the next row
 (defun right-diagonal (board column)
   (rd-aux 1 board (+ (length board) 1) column))
 (defun rd-aux (curr_row board row column)
@@ -45,8 +88,12 @@
         ((= (- curr_row (car board)) (- row column)) t)
         (t (rd-aux (+ curr_row 1) (cdr board) row column))))
 
-; Analogous to the right-diagonal function, but this time checks for a 
-; left-diagonal
+; LEFT-DIAGONAL is analagous to RIGHT-DIAGONAL, except it checks for a conflict
+; with a previous queens diagonal going down and left. If it finds a conflict, it
+; returns true, otherwise it returns nil.
+; Arguments: 
+;   board - the board being checked
+;   col - the column the queen will be placed at, on the next row
 (defun left-diagonal (n board column)
   (ld-aux n 1 board (+ (length board) 1) column))
 (defun ld-aux (n curr_row board row column)
