@@ -2,11 +2,13 @@
     `(unless (equal ,expr ,result)
         (error (format 'nil "Unit test failed: ~A => ~A" ',expr ,expr))))
 
+(unit-test (contains `() 1) nil)
 (unit-test (contains `(1 2 3) 1) t)
 (unit-test (contains `(1 2 3) 2) t)
 (unit-test (contains `(1 2 3) 3) t)
 (unit-test (contains `(1 2 3) 4) nil)
 
+(unit-test (right-diagonal `() 1) nil)
 (unit-test (right-diagonal `(1) 2) t)
 (unit-test (right-diagonal `(1) 1) nil)
 (unit-test (right-diagonal `(2 1) 2) t)
@@ -17,6 +19,7 @@
 (unit-test (right-diagonal `(1 1 1) 3) t)
 (unit-test (right-diagonal `(1 1 1) 4) t)
 
+(unit-test (left-diagonal 4 `() 1) nil)
 (unit-test (left-diagonal 4 `(1 1 1) 1) nil)
 (unit-test (left-diagonal 4 `(1 1 1) 2) nil)
 (unit-test (left-diagonal 4 `(1 1 1) 3) nil)
@@ -28,6 +31,8 @@
 (unit-test (left-diagonal 2 `(1) 1) nil)
 (unit-test (left-diagonal 2 `(2) 1) t)
 
+(unit-test (place-queen 4 `() 1) `(1))
+(unit-test (place-queen 4 `() 2) `(2))
 (unit-test (place-queen 4 `(1) 1) nil)
 (unit-test (place-queen 4 `(1) 2) nil)
 (unit-test (place-queen 4 `(1) 3) `(1 3))
@@ -51,5 +56,10 @@
 (unit-test (length (queens-all 6)) 4)
 (unit-test (length (queens-all 7)) 40)
 (unit-test (length (queens-all 8)) 92)
+
+(unit-test (contains (queens-all 4) (queens 4)) t)
+(unit-test (contains (queens-all 5) (queens 5)) t)
+(unit-test (contains (queens-all 6) (queens 6)) t)
+(unit-test (contains (queens-all 7) (queens 7)) t)
 
 (print "all tests passed :)")
