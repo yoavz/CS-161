@@ -1,0 +1,190 @@
+\documentclass[12pt]{article}
+\usepackage{enumitem}
+\usepackage{array}
+\renewcommand{\thesubsection}{\alph{subsection}.}
+
+\begin{document}
+\title{Assignment \#5}
+\author{Yoav Zimmerman (304125151) \\
+	    CS 161: Artificial Intelligence}
+\maketitle
+
+
+\begin{enumerate}
+
+	% #1
+	\item We use truth tables to show pairs of sentences are equivalent. The bold columns in the following tables represent sentences that are logically equivalent. \\ 
+	\\ 
+	\begin{tabular}{ | c | c | >{\bf}c | >{\bf}c | }
+	\hline
+	P & Q & P $\Rightarrow \neg$ Q & Q $\Rightarrow \neg$ P \\
+	\hline 
+	T & T & F & F \\
+	\hline 
+	T & F & T & T \\
+	\hline 
+	F & T & T & T \\
+	\hline 
+	F & F & T & T \\
+	\hline
+	\end{tabular}
+	
+	\begin{tabular}{ | c | c | >{\bf}c | c | c | >{\bf}c |}
+	\hline
+	P & Q & P $\Leftrightarrow \neg$ Q & P $\land \neg$ Q & $\neg$ P $\land$ Q & ((P $\land \neg$ Q) $\lor$ ( $\neg$ P $\land$ Q)) \\
+	\hline 
+	T & T & F & F & F & F \\
+	\hline 
+	T & F & T & T & F & T \\
+	\hline 
+	F & T & T & F & T & T \\
+	\hline 
+	F & F & F & F & F & F \\
+	\hline
+	\end{tabular}
+	\\
+	
+	% #2
+	\item 
+	\begin{enumerate}
+		\item (Smoke $\Rightarrow$ Fire) $\Rightarrow$ ($\neg$ Smoke $\Rightarrow \neg$ Fire) 
+		\\
+		\\
+		\begin{tabular}{ | c | c | c | c | >{\bf}c |}
+		\hline
+		Smoke & Fire & (Smoke $\Rightarrow$ Fire) & ($\neg$ Smoke $\Rightarrow \neg$ Fire) & Final \\
+		\hline 
+		T & T & T & T & T \\
+		\hline 
+		T & F & F & T & T \\
+		\hline 
+		F & T & T & F & F \\
+		\hline 
+		F & F & T & T & T \\
+		\hline
+		\end{tabular}
+		\\
+		
+		Since the meaning of the sentence is neither empty nor complete, it is \textbf{neither} valid nor unsatisfiable.
+		
+		\item (Smoke $\Rightarrow$ Fire) $\Rightarrow$ ((Smoke $\lor$ Heat) $\Rightarrow$ Fire) 
+		\\
+		\\
+		\begin{tabular}{ | c | c | c | c | c | >{\bf}c |}
+		\hline
+		Smoke & Fire & Heat & (Smoke $\Rightarrow$ Fire) & ((Smoke $\lor$ Heat) $\Rightarrow$ Fire) & Final  \\
+		\hline 
+		T & T & T & T & T & T \\
+		\hline 
+		T & T & F & T & T & T \\
+		\hline 
+		T & F & T & F & F & T \\
+		\hline 
+		T & F & F & F & F & T \\
+		\hline
+		F & T & T & T & T & T \\
+		\hline 
+		F & T & F & T & T & T \\
+		\hline 
+		F & F & T & T & F & F \\
+		\hline 
+		F & F & F & T & T & T \\
+		\hline
+		\end{tabular}
+		\\
+		
+		Since the meaning of the sentence is neither empty nor complete, it is \textbf{neither} valid nor unsatisfiable.
+		
+		\item ((Smoke $\land$ Heat) $\Rightarrow$ Fire) $\iff$  \\
+			((Smoke $\Rightarrow$ Fire) $\lor$ (Heat $\Rightarrow$ Fire)) 
+		
+		\begin{tabular}{ | c | c | c | c |}
+		\hline
+		Smoke & Fire & Heat & ((Smoke $\land$ Heat) $\Rightarrow$ Fire)  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		T & T & F & T  \\
+		\hline 
+		T & F & T & F  \\
+		\hline 
+		T & F & F & T  \\
+		\hline 
+		F & T & T & T  \\
+		\hline 
+		F & T & F & T  \\
+		\hline 
+		F & F & T & T  \\
+		\hline 
+		F & F & F & T  \\
+		\hline 
+		\end{tabular}
+		\\
+
+		\begin{tabular}{ | c | c | c | >{\bf}c |}
+		\hline
+		(Smoke $\Rightarrow$ Fire) & (Heat $\Rightarrow$ Fire) & ((Smoke $\Rightarrow$ Fire) $\lor$ (Heat $\Rightarrow$ Fire)) & Final  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		F & F & F & T \\
+		\hline 
+		F & T & T & T  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		T & F & T & T  \\
+		\hline 
+		T & T & T & T  \\
+		\hline 
+		\end{tabular}
+		\\
+		
+		Since the meaning of the sentence is a complete set, it is \textbf{valid}.
+	\end{enumerate}
+	
+	% # 3
+	\item
+	\begin{enumerate}
+		\item To encode the information in propositional logic, we first have to decide on boolean variables: \textit{Mythical, Mortal, Mammal, Horned, Magical}. We then write the rules using logical notation:
+		\begin{enumerate}
+			\item Mythical $\Rightarrow \neg$ Mortal
+			\item $\neg$ Mythical $\Rightarrow$ (Mortal $\land$ Mammal)
+			\item ($\neg$ Mortal $\lor$ Mammal) $\Rightarrow$ Horned
+			\item Horned $\Rightarrow$ Magical
+		\end{enumerate}
+		
+		\item The above statements can also be written in Conjunctive Normal Form (CNF): \\ \\
+		($\neg$ Mythical $\lor$ $\neg$ Mortal) \\
+		$\land$ \\
+		(Mythical $\lor$ Mortal) \\
+		$\land$ \\
+		(Mythical $\lor$ Mammal) \\
+		$\land$ \\
+		(Mortal $\lor$ Horned) \\
+		$\land$ \\
+		(Mortal $\lor$ $\neg$ Mammal) \\
+		$\land$ \\
+		($\neg$ Horned $\lor$ Magical) \\
+		
+		\item To prove that the unicorn is \textit{Horned}, we follow the derivation:
+		\begin{enumerate}
+			\item Mythical $\lor$ $\neg$ Mythical \textit{(always true)}
+			\item $\neg$ Mortal $\lor$ (Mortal $\land$ Mammal) \textit{(sentences i. and ii.)}
+			\item ($\neg$ Mortal $\lor$ Mortal) $\land$ ($\neg$ Mortal $\lor$ Mammal) \textit{(distribution)}
+			\item $\neg$ Mortal $\lor$ Mammal \textit{(left term is always true)}
+			\item \textbf{Horned} \textit{(sentence iii.)}
+		\end{enumerate}
+		To prove that the unicorn is \textit{Magical} is trivial once we have proved that the unicorn is \textit{Horned} by applying \textit{sentence iv}. It is not possible to prove that the unicorn is \textit{Mythical}.
+	\end{enumerate}
+	
+	
+		
+\end{enumerate}
+
+
+\end{document}
