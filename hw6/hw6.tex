@@ -1,0 +1,72 @@
+\documentclass[12pt]{article}
+\usepackage{enumitem}
+\usepackage{array}
+\renewcommand{\thesubsection}{\alph{subsection}.}
+
+\begin{document}
+\title{Assignment \#6}
+\author{Yoav Zimmerman (304125151) \\
+	    CS 161: Artificial Intelligence}
+\maketitle
+
+
+\begin{enumerate}
+
+	% #1
+	\item For each pair of atomic sentences, we specify the most general unifier if it exists
+		\begin{enumerate}
+			\item P(A, B, B), P(x, y, z) \\
+				$ \theta = \{ x/A, y/B, z/B \} $
+			\item Q(y, G(A, B)), Q(G(x, x), y) \\
+				$ \theta = \emptyset $
+			\item R(x, A, z), R(B, y, z) \\
+				$ \theta = \{ x/B, y/A \} $
+			\item Older(Father(y), y), Older(Father(x), John)
+				$ \theta = \emptyset $
+			\item Knows(Father(y), y), Knows(x, x)
+				$ \theta = \emptyset $
+		\end{enumerate}
+		
+	\item We translate each of the following sentences into formulas in first-order logic
+		\begin{enumerate}
+			\item There exists at most one x such that P(x). \\
+				TODO: ???
+			\item There exists exactly one x such that P(x). \\
+				$\exists_x \forall_y \bullet \neg P(y) \lor (x = y) $
+			\item There exists at least two x such that P(x). \\
+				$\exists_x \exists_y \bullet P(x) \land P(y) \land \neg (x = y)$
+			\item There exists at most two x such that P(x). \\
+				TODO: ???
+			\item There exists exactly two x such that P(x). \\
+				TODO: ???
+		\end{enumerate}
+
+	\item We determine if each knowledge base is satisfiable
+		\begin{enumerate}
+			\item P(A), (E x) (~P(x)) \\
+				??? The above knowledge base has only one ground term A which does not satisfy ~P(x). Since no ground terms satisfy the existential qualifier, it is \textbf{not satisfiable}.
+			\item P(A), (A x) (~P(x)) \\
+				The above knowledge base has only one ground term A which does not satisfy ~P(x). Since there is at least one term that does not satisfy the universal quantifier, it is \textbf{not satisfiable}.
+			\item (A x) (E y) (P(x, y)), (A x) (~P(x, x)). \\
+				
+			\item (A x) (P(x) => (E x) (P(x))). \\
+			\item (A x) (P(x) => (A x) (P(x))). \\
+		\end{enumerate}
+				
+	\item 
+		\begin{enumerate}
+			\item
+			\begin{enumerate}
+				\item $\forall_x \bullet eats(John, food(x))$
+				\item $food(Apples)$
+				\item $food(Chicken)$
+				\item $eats(x, y) \land \neg kills(y, z) \Rightarrow food(y)$
+				\item $kills(x, y) \Rightarrow \neg alive(y)$
+				\item $eats(Bill, food(Peanuts)) \land alive(Bill)$
+				\item $eats(Sue, food(x)) \Rightarrow eats(Bill, food(x))$
+			\end{enumerate}
+		\end{enumerate}	
+\end{enumerate}
+
+
+\end{document}
