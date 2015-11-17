@@ -21,18 +21,18 @@
 				$ \theta = \emptyset $
 			\item R(x, A, z), R(B, y, z) \\
 				$ \theta = \{ x/B, y/A \} $
-			\item Older(Father(y), y), Older(Father(x), John)
-				$ \theta = \emptyset $
-			\item Knows(Father(y), y), Knows(x, x)
+			\item Older(Father(y), y), Older(Father(x), John) \\
+				$ \theta = \{ y/John, x/John \} $
+			\item Knows(Father(y), y), Knows(x, x) \\
 				$ \theta = \emptyset $
 		\end{enumerate}
 		
 	\item We translate each of the following sentences into formulas in first-order logic
 		\begin{enumerate}
 			\item There exists at most one x such that P(x). \\
-				TODO: ???
+				$\big( \exists_x \forall_y \bullet \neg P(y) \lor (x = y) \big) \lor \big( \forall_x \neg P(x) \big)$
 			\item There exists exactly one x such that P(x). \\
-				$\exists_x \forall_y \bullet \neg P(y) \lor (x = y) $
+				$\exists_x \forall_y \bullet \neg P(y) \lor (x = y)$
 			\item There exists at least two x such that P(x). \\
 				$\exists_x \exists_y \bullet P(x) \land P(y) \land \neg (x = y)$
 			\item There exists at most two x such that P(x). \\
@@ -44,27 +44,77 @@
 	\item We determine if each knowledge base is satisfiable
 		\begin{enumerate}
 			\item P(A), (E x) (~P(x)) \\
-				??? The above knowledge base has only one ground term A which does not satisfy ~P(x). Since no ground terms satisfy the existential qualifier, it is \textbf{not satisfiable}.
+				??? The above knowledge base has only one ground term A which does not satisfy ~P(x). Since no ground terms satisfy the existential qualifier, it is \textbf{not satisfiable}. \\
+				It is satisfiable.
 			\item P(A), (A x) (~P(x)) \\
 				The above knowledge base has only one ground term A which does not satisfy ~P(x). Since there is at least one term that does not satisfy the universal quantifier, it is \textbf{not satisfiable}.
 			\item (A x) (E y) (P(x, y)), (A x) (~P(x, x)). \\
-				
+				Satisfiable. Consider P(A, B), P(B, A), not P(A, A), not P(B, B)
 			\item (A x) (P(x) => (E x) (P(x))). \\
+				Yes, this is always true
 			\item (A x) (P(x) => (A x) (P(x))). \\
+				Satisfiable by a knowledge base for which all x P(x)?
 		\end{enumerate}
 				
 	\item 
 		\begin{enumerate}
-			\item
+			\item First, we translate the english sentences into first order logic:
 			\begin{enumerate}
-				\item $\forall_x \bullet eats(John, food(x))$
-				\item $food(Apples)$
-				\item $food(Chicken)$
-				\item $eats(x, y) \land \neg kills(y, z) \Rightarrow food(y)$
-				\item $kills(x, y) \Rightarrow \neg alive(y)$
-				\item $eats(Bill, food(Peanuts)) \land alive(Bill)$
-				\item $eats(Sue, food(x)) \Rightarrow eats(Bill, food(x))$
+				\item $\forall_x \bullet Eats(John, Food(x))$
+				\item $Food(Apples)$
+				\item $Food(Chicken)$
+				\item $\forall_x \forall_y \forall_z \bullet Eats(x, Food(y)) \land \neg Kills(Food(y), z) \Rightarrow Food(y)$
+				\item $\forall_x \forall_y \bullet Kills(x, y) \Rightarrow \neg Alive(y)$
+				\item $Eats(Bill, Food(Peanuts)) \land Alive(Bill)$
+				\item $\forall_x \bullet Eats(Bill, Food(x)) \Rightarrow Eats(Sue, Food(x))$
 			\end{enumerate}
+			\item Next, we transform these formula's into CNF, with the following clauses:
+			\begin{enumerate}
+				\item Eats(John, Food(a))
+				\item Food(Apples)
+				\item Food(Chicken)
+				\item $\neg$ Eats(b, Food(c)) $\lor$ Kills(c, d) $\lor$ Food(c)
+				\item $\neg$ Kills(e, f) $\lor \neg$ Alive(f)
+				\item Eats(Bill, Food(Peanuts))
+				\item Alive(Bill)
+				\item $\neg$ Eats(Bill, Food(g)) $\lor$ Eats(Sue, Food(g))
+			\end{enumerate}
+			\item Next, we derive that John likes peanuts using resolution
+			\begin{enumerate}
+			  	\setcounter{enumiii}{8}
+				\item Kills(Peanuts, d) $\lor$ Food(Peanuts) \\
+					Clauses \textit{iv} and \textit{vi} with $ \theta = \{ b/Bill, c/Peanuts \} $
+				\item $\neg$ Kills(e, Bill) \\
+					Clauses \textit{v} and \textit{vii} with $ \theta = \{ f/Bill \} $
+				\item Food(Peanuts) \\
+					Clauses \textit{ix} and \textit{x} with $ \theta = \{ e/Peanuts, d/Bill \} $
+				\item \textbf{Eats(John, Food(Peanuts))} \\
+					Clauses \textit{i} and \textit{xi} with $ \theta = \{ a/Peanuts \} $
+			\end{enumerate}
+			\item Deriving what food Sue eats only requires one resolution step:
+			\begin{enumerate}
+				\setcounter{enumiii}{12}
+				\item \textbf{Eats(Sue, Food(Peanuts))} \\
+					Clauses \textit{vi} and \textit{viii} with $ \theta = \{ g/Peanuts \} $
+			\end{enumerate}
+			\item Let us replace clauses \textit{vi} and \textit{vii} with the following clauses:
+			\begin{enumerate}
+				\setcounter{enumiii}{5}
+				\item Eats(h, i) $\lor$ Die(h)
+				\item $\neg$ Die(j) $\lor$ Alive(j)
+				\setcounter{enumiii}{8}
+				\item Bill(Alive)
+			\end{enumerate}
+			Clauses \textit{i - v} and \textit{viii} from above are still valid. Now, we use these nine new clauses and resolution to derive what food Sue eats in this case:
+			\begin{enumerate}
+				\setcounter{enumiii}{9}
+				\item Eats(h, i) $\lor$ Alive(h) \\
+					Clauses \textit{vi} and \textit{vii} with $ \theta = \{ j/h \} $
+				\item Eats(h, i) $\lor$ Alive(h) \\
+					Clauses \textit{vi} and \textit{vii} with $ \theta = \{ j/h \} $
+			
+			\end{enumerate}
+				  
 		\end{enumerate}	
 \end{enumerate}
 
